@@ -3,7 +3,7 @@ name: CI - Build and Push Docker Image
 on:
   push:
     branches:
-      - main  # or master, depending on your default branch
+      - master  # or master, depending on your default branch
 
 jobs:
   build:
