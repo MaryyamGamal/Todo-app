@@ -5,7 +5,7 @@ on:
     branches:
       - master
 
-  jobs:
+jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     env:
