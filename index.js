@@ -22,10 +22,6 @@ app.set('views', path.join(__dirname, 'views'));
 
 // ===== ROUTES ===== //
 
-app.get('/example', (req, res) => {
-    // Simulate a 404 Not Found response
-    res.status(404).send('Resource not found');
-});
 
 // Health check endpoint (required for Docker healthcheck)
 app.get('/health', (req, res) => {
