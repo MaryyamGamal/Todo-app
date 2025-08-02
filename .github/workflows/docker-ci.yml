@@ -5,20 +5,12 @@ on:
     branches:
       - master
 
-jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
-
-    env:
-      ECR_REPO: todo-app  # ✅ Use the actual ECR repo name here
-      DOCKER_REPO: ${{ secrets.DOCKER_REPO }}
-jobs:
+  jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     env:
       ECR_REPO: todo-app
       DOCKER_REPO: ${{ secrets.DOCKER_REPO }}
-      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
     steps:
       # 📦 Checkout code
