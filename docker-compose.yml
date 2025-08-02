@@ -67,10 +67,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - ~/.docker/config.json:/config.json:ro
     environment:
-
-      - WATCHTOWER_USERNAME=${DOCKER_HUB_USERNAME}
-
-      - WATCHTOWER_PASSWORD=${DOCKER_HUB_PASSWORD}
+      - DOCKER_CONFIG=/
     command: todo-app-service grafana prometheus cadvisor --interval 30 --cleanup --include-restarting
     networks:
       - todo-network

@@ -22,15 +22,6 @@ app.set('views', path.join(__dirname, 'views'));
 
 // ===== ROUTES ===== //
 
-app.get('/example', (req, res) => {
-    // Simulate a 404 Not Found response
-    res.status(404).send('Resource not found');
-});
-
-app.listen(3000, () => {
-    console.log('Server is running on port 3000');
-});
-
 // Health check endpoint (required for Docker healthcheck)
 app.get('/health', (req, res) => {
     const dbStatus = mongoose.connection.readyState === 1 ? 'connected' : 'disconnected';
