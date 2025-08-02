@@ -64,17 +64,4 @@ jobs:
           docker push $ECR_REGISTRY/$ECR_REPO:latest
           docker push $ECR_REGISTRY/$ECR_REPO:previous
 
-      # ✅ Notify on success
-      - name: Notify Success
-        if: ${{ success() && secrets.SLACK_WEBHOOK_URL != '' }}
-        run: |
-          curl -X POST -H "Content-Type: application/json" \
-            -d '{"text":"✅ CI/CD: Build & deploy succeeded! App Runner will auto-deploy."}' \
-            ${{ secrets.SLACK_WEBHOOK_URL }}
 
-
-
-// Example for Express.js (Node.js)
-app.get("/", (req, res) => {
-  res.status(404).send("Simulated 404 error");
-});
