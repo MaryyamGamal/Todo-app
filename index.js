@@ -8,6 +8,19 @@ const db = require('./config/mongoose');
 const User = require('./models/register');
 const Login = require('./models/login');
 const Dashboard = require('./models/dashboard');
+const client = require('prom-client');
+const collectDefaultMetrics = client.collectDefaultMetrics;
+
+
+collectDefaultMetrics();
+
+
+const httpRequestCounter = new client.Counter({
+  name: 'http_requests_total',
+  help: 'Total number of HTTP requests',
+  labelNames: ['method', 'route', 'statusCode']
+});
+
 
 const app = express();
 
@@ -21,6 +34,15 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
 // ===== ROUTES ===== //
+
+app.get('/metrics', async (req, res) => {
+    try {
+        res.set('Content-Type', client.register.contentType);
+        res.end(await client.register.metrics());
+    } catch (ex) {
+        res.status(500).end(ex);
+    }
+});
 
 
 // Health check endpoint (required for Docker healthcheck)
@@ -101,12 +123,24 @@ app.get('/delete-task', (req, res) => {
         res.redirect('back');
     });
 });
+//for prometheus
+app.use((req, res, next) => {
+    res.on('finish', () => {
+        httpRequestCounter.inc({
+            method: req.method,
+            route: req.route?.path || req.path,
+            statusCode: res.statusCode
+        });
+    });
+    next();
+});
 
 // Error handling middleware
 app.use((err, req, res, next) => {
     console.error(err.stack);
     res.status(500).send('Something broke!');
 });
+
 
 // Start the server
 app.listen(port, '0.0.0.0', () => {

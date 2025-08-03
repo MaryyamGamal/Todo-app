@@ -65,7 +65,8 @@ services:
     restart: unless-stopped
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ~/.docker/config.json:/config.json:ro
+      - /home/mariam/.docker/config.json:/config.json:ro
+
     environment:
       - DOCKER_CONFIG=/
     command: todo-app-service grafana prometheus cadvisor --interval 30 --cleanup --include-restarting

@@ -9,6 +9,8 @@ COPY package*.json ./
 
 # Install any needed packages specified in package.json
 RUN npm install
+npm install prom-client
+
 
 # Copy the rest of the application code to the working directory
 COPY . .
@@ -28,3 +30,6 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 CMD curl -
 
 # Define the command to run the application
 CMD [ "npm", "start" ]
+
+
+
