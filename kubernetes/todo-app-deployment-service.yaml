@@ -13,7 +13,7 @@ spec:
         app: todo-app
     spec:
       imagePullSecrets:
-      - name: dockerhub-secret  # Reference to the secret
+      - name: dockerhub-secret
       containers:
       - name: todo-app
         image: margam59/todo-app:latest
@@ -27,6 +27,8 @@ spec:
         - name: mongoDbUrl
           value: mongodb+srv://mariemgamal:mg592001@cluster0.6xe3vyw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
 
+--- # <--- THIS SEPARATOR IS CRITICAL
+
 apiVersion: v1
 kind: Service
 metadata:
@@ -36,6 +38,7 @@ spec:
   selector:
     app: todo-app
   ports:
-    - port: 4000        
-      targetPort: 4000  
-      nodePort: 32000   
+    - port: 4000
+      targetPort: 4000
+      nodePort: 32000
+
