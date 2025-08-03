@@ -1,0 +1,77 @@
+---
+- name: Install Docker on Ubuntu 24.04 (Noble Numbat)
+  hosts: all
+  become: true
+  gather_facts: true
+
+  tasks:
+    - name: Remove old Docker versions (if any)
+      apt:
+        name:
+          - docker
+          - docker-engine
+          - docker.io
+          - containerd
+          - runc
+        state: absent
+        purge: yes
+        autoremove: yes
+
+    - name: Install dependencies
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+          - gnupg
+          - lsb-release
+        state: latest
+
+    - name: Create Docker's apt keyring directory
+      file:
+        path: /etc/apt/keyrings
+        state: directory
+        mode: '0755'
+
+    - name: Add Docker's official GPG key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        keyring: /etc/apt/keyrings/docker.gpg
+
+    - name: Set up the stable Docker repository
+      apt_repository:
+        repo: deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu noble stable
+        state: present
+        update_cache: yes
+
+    - name: Install Docker components
+      apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-buildx-plugin
+          - docker-compose-plugin
+        state: latest
+
+    - name: Add user to docker group (replace with your user)
+      user:
+        name: "{{ ansible_user }}"
+        groups: docker
+        append: yes
+
+    - name: Ensure Docker is running and enabled
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Verify Docker installation
+      command: docker --version
+      register: docker_version
+      changed_when: false
+
+    - name: Show Docker version
+      debug:
+        msg: "Docker version {{ docker_version.stdout }} successfully installed"
