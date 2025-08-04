@@ -57,19 +57,16 @@ services:
       - todo-network
     restart: unless-stopped
 
-  watchtower:
-    image: containrrr/watchtower
-    container_name: watchtower
-    restart: unless-stopped
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - /home/mariam/.docker:/config:ro
-    environment:
-      - DOCKER_USERNAME=${DOCKER_USERNAME}
-      - DOCKER_PASSWORD=${DOCKER_PASSWORD}
-    command: todo-app-service grafana prometheus cadvisor --interval 30 --cleanup --include-restarting
-    networks:
-      - todo-network
+watchtower:
+  image: containrrr/watchtower
+  container_name: watchtower
+  restart: unless-stopped
+  volumes:
+    - /var/run/docker.sock:/var/run/docker.sock
+    - /home/mariam/.docker/config.json:/config.json:ro
+  command: --interval 30 --cleanup --include-restarting todo-app-service grafana prometheus cadvisor
+  networks:
+    - todo-network
 
 networks:
   todo-network:
