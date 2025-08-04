@@ -65,11 +65,11 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - /home/mariam/.docker:/config:ro
     environment:
-      - DOCKER_CONFIG=/config
+      - DOCKER_USERNAME=${DOCKER_USERNAME}
+      - DOCKER_PASSWORD=${DOCKER_PASSWORD}
     command: todo-app-service grafana prometheus cadvisor --interval 30 --cleanup --include-restarting
     networks:
       - todo-network
-
 
 networks:
   todo-network:
