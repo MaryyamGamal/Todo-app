@@ -14,9 +14,17 @@ jobs:
       DOCKER_REPO: ${{ secrets.DOCKER_REPO }}
 
     steps:
-      # 📦 Checkout code
+      # 📦 Checkout source code
       - name: Checkout Code
         uses: actions/checkout@v3
+
+      # 🧪 Run basic test (optional placeholder)
+      - name: Run Tests
+        run: |
+          echo "Running tests..."
+          # Normally: npm ci && npm test
+          echo "No real tests found. Skipping."
+          exit 0
 
       # 🔐 Login to Docker Hub
       - name: Log in to Docker Hub
@@ -35,26 +43,37 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      # 🛠 Build Docker image and tag for both Docker Hub & ECR
-      - name: Build and Tag Docker Image
+      # 📥 Pull previous image from ECR and tag it as 'previous'
+      - name: Tag Old ECR Image as Previous
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        continue-on-error: true  # in case image doesn't exist yet
+        run: |
+          docker pull $ECR_REGISTRY/$ECR_REPO:latest || echo "No previous image found."
+          docker tag $ECR_REGISTRY/$ECR_REPO:latest $ECR_REGISTRY/$ECR_REPO:previous || echo "Tagging skipped."
+
+      # 🚀 Push old image as 'previous' (only if pulled)
+      - name: Push Previous Tag to ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        continue-on-error: true
+        run: |
+          docker push $ECR_REGISTRY/$ECR_REPO:previous || echo "Push skipped."
+
+      # 🛠 Build and Tag New Docker Image
+      - name: Build and Tag New Docker Image
         run: |
           docker build -t $DOCKER_REPO:latest .
-          docker tag $DOCKER_REPO:latest $ECR_REGISTRY/$ECR_REPO:latest
-          docker tag $DOCKER_REPO:latest $ECR_REGISTRY/$ECR_REPO:previous
 
-      # 🚀 Push to Docker Hub
+      # 🚀 Push new image to Docker Hub
       - name: Push to Docker Hub
-        run: |
-          docker push $DOCKER_REPO:latest
+        run: docker push $DOCKER_REPO:latest
 
-      # 🚀 Push to Amazon ECR
-      - name: Push to Amazon ECR
+      # 🚀 Tag and Push to ECR
+      - name: Push New Image to ECR
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
+          docker tag $DOCKER_REPO:latest $ECR_REGISTRY/$ECR_REPO:latest
           docker push $ECR_REGISTRY/$ECR_REPO:latest
-          docker push $ECR_REGISTRY/$ECR_REPO:previous
-
 
