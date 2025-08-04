@@ -78,11 +78,4 @@ jobs:
           docker tag $DOCKER_REPO:latest $ECR_REGISTRY/$ECR_REPO:latest
           docker push $ECR_REGISTRY/$ECR_REPO:latest
 
-      # 🔁 Restart docker-compose locally (on same VM)
-      - name: Restart docker-compose
-        run: |
-          cd ~/task/new-todo
-          docker-compose down
-          docker-compose pull
-          docker-compose up -d
 
