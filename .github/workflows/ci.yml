@@ -68,6 +68,7 @@ jobs:
       # 🚀 Push new image to Docker Hub
       - name: Push to Docker Hub
         run: docker push $DOCKER_REPO:latest
+        
 
       # 🚀 Tag and Push to ECR
       - name: Push New Image to ECR
@@ -76,4 +77,12 @@ jobs:
         run: |
           docker tag $DOCKER_REPO:latest $ECR_REGISTRY/$ECR_REPO:latest
           docker push $ECR_REGISTRY/$ECR_REPO:latest
+
+      # 🔁 Restart docker-compose locally (on same VM)
+      - name: Restart docker-compose
+        run: |
+          cd ~/task/new-todo
+          docker-compose down
+          docker-compose pull
+          docker-compose up -d
 
